@@ -20,13 +20,13 @@ elif rc == 0:                   # child
    # args = ["wc", "p3-exec.py"]
     args =[userIN[0], userIN[1]]
 
-    os.close(1)                 # redirect child's stdout
+    #os.close(1)                 # redirect child's stdout
     #sys.stdout = open("Name.txt", "w")
     #fd = sys.stdout.fileno() # os.open("p4-output.txt", os.O_CREAT)
     #os.set_inheritable(fd, True)
 
     #os.write(2, ("Child: opened fd=%d for writing\n" % fd).encode())
-    if len(userIN) < 3:
+    if len(userIN) < 3:                             #if is only (ex) wc file.txt
       for dir in re.split(":", os.environ['PATH']): # try each directory in path
         program = "%s/%s" % (dir, args[0])
         try:
@@ -34,7 +34,19 @@ elif rc == 0:                   # child
         except FileNotFoundError:             # ...expected
             pass                              # ...fail quietly
 
-    elif userIN[2] == ">":
+    elif len(userIN) == 3:                          #if is only (ex) wc < file.txt
+        if userIN[1] == "<":
+            args[1] = userIN[2]
+            for dir in re.split(":", os.environ['PATH']):  # try each directory in path
+                program = "%s/%s" % (dir, args[0])
+                try:
+                    os.execve(program, args, os.environ)  # try to exec program
+                except FileNotFoundError:  # ...expected
+                    pass
+
+
+    elif userIN[2] == ">":                          #if is only (ex) wc file.txt > H.txt
+         os.close(1)
          sys.stdout = open(userIN[3], "w")
          fd = sys.stdout.fileno() # os.open("p4-output.txt", os.O_CREAT)
          os.set_inheritable(fd, True)
@@ -44,7 +56,9 @@ elif rc == 0:                   # child
                 os.execve(program, args, os.environ)  # try to exec program
              except FileNotFoundError:  # ...expected
                  pass
-    elif userIN[2] == "<":
+
+    elif userIN[2] == "<":                          #if is only (ex) wc H.txt < file.txt
+        os.close(1)
         args = [userIN[0], userIN[3]]
         sys.stdout = open(userIN[1], "w")
         fd = sys.stdout.fileno()  # os.open("p4-output.txt", os.O_CREAT)
