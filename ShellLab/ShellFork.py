@@ -44,6 +44,17 @@ elif rc == 0:                   # child
                 os.execve(program, args, os.environ)  # try to exec program
              except FileNotFoundError:  # ...expected
                  pass
+    elif userIN[2] == "<":
+        args = [userIN[0], userIN[3]]
+        sys.stdout = open(userIN[1], "w")
+        fd = sys.stdout.fileno()  # os.open("p4-output.txt", os.O_CREAT)
+        os.set_inheritable(fd, True)
+        for dir in re.split(":", os.environ['PATH']):  # try each directory in path
+            program = "%s/%s" % (dir, args[0])
+            try:
+                os.execve(program, args, os.environ)  # try to exec program
+            except FileNotFoundError:  # ...expected
+                pass
 
 
 
