@@ -18,9 +18,9 @@ elif rc == 0:                   # child
     #os.write(1, ("Child: My pid==%d.  Parent's pid=%d\n" %
                  #(os.getpid(), pid)).encode())
    # args = ["wc", "p3-exec.py"]
-    args ={userIN[0], userIN[1]}
+    args =[userIN[0], userIN[1]]
 
-    #os.close(1)                 # redirect child's stdout
+    os.close(1)                 # redirect child's stdout
     #sys.stdout = open("Name.txt", "w")
     #fd = sys.stdout.fileno() # os.open("p4-output.txt", os.O_CREAT)
     #os.set_inheritable(fd, True)
