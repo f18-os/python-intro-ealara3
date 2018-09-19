@@ -41,8 +41,20 @@ def userChoice(userIN):
     #  (os.getpid(), pid)).encode())
     # args = ["wc", "p3-exec.py"]
 
+    if '|' in userIN:
+        j=0
+        for i in userIN:
+            if i == "|":
+                break
+            j=j+1
+        LeftPart = userIN[0: j]
+        print(LeftPart)
+        RightPart = userIN[(j+1):]
+        print(RightPart)
+        pippingHere(LeftPart, RightPart)
 
-    if '<' in userIN:
+
+    elif '<' in userIN:
         if len(userIN) == 3:
             args = [userIN[0], userIN[2]]
             ScreenExec(args)                               ########try
@@ -56,18 +68,6 @@ def userChoice(userIN):
         args = [userIN[0], userIN[1]]
         OutUser = userIN[3]
         fileExec(args, OutUser)
-
-    elif '|' in userIN:
-        j=0
-        for i in userIN:
-            if i == "|":
-                break
-            j=j+1
-        LeftPart = userIN[0: j]
-        print(LeftPart)
-        RightPart = userIN[(j+1):]
-        print(RightPart)
-        pippingHere(LeftPart, RightPart)
 
     else:
         ScreenExec(userIN)                                     #########try
@@ -94,7 +94,7 @@ def pippingHere(Left, Right):
     elif rc2 == 0:
         if '<' in Left:
             sys.exit(1)
-        elif '>' in Right:
+        elif '>' in Left:
             sys.exit()
         #else:
             #print("Doing work")
@@ -138,6 +138,15 @@ def PipeRight(Right):
 
     fd = sys.stdin.fileno()  # os.open("p4-output.txt", os.O_CREAT)
     os.set_inheritable(fd, True)
+    if '<' in Right:
+        sys.exit(1)
+
+    elif '>' in Right:
+        os.close(1)
+        sys.stdout = open(Right[2], "w")
+        fd = sys.stdout.fileno()  # os.open("p4-output.txt", os.O_CREAT)
+        os.set_inheritable(fd, True)
+
 
     os.write(2, ("Child: opened fd=%d for writing\n" % fd).encode())
     for dir in re.split(":", os.environ['PATH']):  # try each directory in path
@@ -173,11 +182,14 @@ def fileExec(args, OutUser):
 
 while 1 :
    r, w = os.pipe()
-   userIN = input("").split()
+   try:
+       userIN = input("").split()
+   except EOFError:
+       sys.exit(1)
    #userIN = input("").split()
    if 'PS1' in os.environ:
        os.write(1, os.environ['PS1'].encode())
-       
+
 
    if 'exit' in userIN:
        sys.exit(1)
