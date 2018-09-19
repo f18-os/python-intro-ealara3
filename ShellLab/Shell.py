@@ -41,6 +41,7 @@ def userChoice(userIN):
     #  (os.getpid(), pid)).encode())
     # args = ["wc", "p3-exec.py"]
 
+
     if '<' in userIN:
         if len(userIN) == 3:
             args = [userIN[0], userIN[2]]
@@ -174,9 +175,12 @@ while 1 :
    r, w = os.pipe()
    userIN = input("").split()
    #userIN = input("").split()
-   if userIN[0] == "exit":
-       break
+   if 'PS1' in os.environ:
+       os.write(1, os.environ['PS1'].encode())
+       
 
+   if 'exit' in userIN:
+       sys.exit(1)
 
    pdl = os.fork()
    if pdl < 0:
