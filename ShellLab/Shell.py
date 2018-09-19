@@ -2,6 +2,27 @@
 
 import os, sys, time, re
 
+def ispath(word):
+    return word[0] is '/'
+
+def doPath(args):
+    if len(args) > 1:
+        if ispath(args[1]):
+            os.chdir(args[1])
+    if ispath(args[0]):
+        program = args[0]
+        try:
+            os.execve(program, Left, os.environ)  # try to exec program
+        except FileNotFoundError:  # ...expected
+            pass  # ...fail quietly
+    else:
+        for dir in re.split(":", os.environ['PATH']):  # try each directory in path
+            program = "%s/%s" % (dir, Left[0])
+            try:
+                os.execve(program, Left, os.environ)  # try to exec program
+            except FileNotFoundError:  # ...expected
+                pass  # ...fail quietly
+
 
 def userChoice(userIN):
     pid = os.getpid()               # get and remember pid
@@ -11,11 +32,11 @@ def userChoice(userIN):
 
     #rc = os.fork()
 
-    # if rc < 0:
+    #if rc < 0:
     #os.write(2, ("fork failed, returning %d\n" % rc).encode())
     #sys.exit(1)
 
-    # elif rc == 0:                   # child
+    #elif rc == 0:                   # child
     # os.write(1, ("Child: My pid==%d.  Parent's pid=%d\n" %
     #  (os.getpid(), pid)).encode())
     # args = ["wc", "p3-exec.py"]
@@ -23,7 +44,8 @@ def userChoice(userIN):
     if '<' in userIN:
         if len(userIN) == 3:
             args = [userIN[0], userIN[2]]
-            ScreenExec(args)
+            ScreenExec(args)                               ########try
+            #doPath(args)
         else:
             args = [userIN[0],userIN[3]]
             OutUser =  userIN[1]
@@ -47,14 +69,15 @@ def userChoice(userIN):
         pippingHere(LeftPart, RightPart)
 
     else:
-        ScreenExec(userIN)
+        ScreenExec(userIN)                                     #########try
+        #doPath(args)
 
             # os.write(2, ("Child:    Error: Could not exec %s\n" % args[0]).encode())
         #sys.exit(1)                 # terminate with error
 
-   # else:                           # parent (forked ok)
-        os.write(1, ("Parent: My pid=%d.  Child's pid=%d\n" %
-                     (pid, rc)).encode())
+    #else:                           # parent (forked ok)
+        #os.write(1, ("Parent: My pid=%d.  Child's pid=%d\n" %
+                     #(pid, rc)).encode())
         #childPidCode = os.wait()
         #os.write(1, ("Parent: Child %d terminated with exit code %d\n" %
                    #childPidCode).encode())
@@ -72,9 +95,9 @@ def pippingHere(Left, Right):
             sys.exit(1)
         elif '>' in Right:
             sys.exit()
-        else:
+        #else:
             #print("Doing work")
-            PipeLeft(Left)
+        PipeLeft(Left)
            # print("finish work")
     else:
         #print("waiting")
@@ -122,9 +145,6 @@ def PipeRight(Right):
             os.execve(program, Right, os.environ)  # try to exec program
         except FileNotFoundError:  # ...expected
             pass  # ...fail quietly
-
-
-
 
 
 def ScreenExec(args):
