@@ -174,11 +174,24 @@ while 1 :
    r, w = os.pipe()
    userIN = input("").split()
    #userIN = input("").split()
-
    if userIN[0] == "exit":
-        break
-   else:
+       break
+
+
+   pdl = os.fork()
+   if pdl < 0:
+       os.write(2, ("Child: opened fd=%d for writing\n" % fd).encode())
+   elif pdl == 0:
        userChoice(userIN)
+
+   else:
+       for i in (r, w):
+           os.close(i)
+       os.wait
+
+
+
+
       # if len(userIN) == 2:
       #     Right = userIN[0]
      #      Left = userIN[1]
