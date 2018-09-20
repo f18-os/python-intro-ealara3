@@ -12,14 +12,14 @@ def doPath(args):
     if ispath(args[0]):
         program = args[0]
         try:
-            os.execve(program, Left, os.environ)  # try to exec program
+            os.execve(program, args, os.environ)  # try to exec program
         except FileNotFoundError:  # ...expected
             pass  # ...fail quietly
     else:
         for dir in re.split(":", os.environ['PATH']):  # try each directory in path
-            program = "%s/%s" % (dir, Left[0])
+            program = "%s/%s" % (dir, args[0])
             try:
-                os.execve(program, Left, os.environ)  # try to exec program
+                os.execve(program, args, os.environ)  # try to exec program
             except FileNotFoundError:  # ...expected
                 pass  # ...fail quietly
 
@@ -41,7 +41,11 @@ def userChoice(userIN):
     #  (os.getpid(), pid)).encode())
     # args = ["wc", "p3-exec.py"]
 
-    if '|' in userIN:
+    if ispath(userIN[0]):
+        print(userIN)
+        doPath(userIN)
+
+    elif '|' in userIN:
         j=0
         for i in userIN:
             if i == "|":
