@@ -200,6 +200,14 @@ while 1 :
    if 'PS1' in os.environ:
        os.write(1, os.environ['PS1'].encode())
 
+   if 'cd' in userIN:
+       if len(userIN) == 1:
+           continue
+       elif '..' in userIN:
+           place = os.getcwd().split('/')
+           newplace = '/'.join(place[0:len(place)-2])
+           os.chdir(newplace)
+
 
    if 'exit' in userIN:
        sys.exit(1)
