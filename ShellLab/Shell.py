@@ -198,7 +198,8 @@ while 1 :
    if pdl < 0:
        os.write(2, ("Child: opened fd=%d for writing\n" % fd).encode())
    elif pdl == 0:
-       userChoice(userIN)
+       if len(userIN)>0:
+           userChoice(userIN)
 
    else:
        for i in (r, w):
