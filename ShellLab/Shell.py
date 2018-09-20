@@ -9,6 +9,7 @@ def doPath(args):
     if len(args) > 1:
         if ispath(args[1]):
             os.chdir(args[1])
+            os.getcwd()
     if ispath(args[0]):
         program = args[0]
         try:
@@ -42,7 +43,6 @@ def userChoice(userIN):
     # args = ["wc", "p3-exec.py"]
 
     if ispath(userIN[0]):
-        print(userIN)
         doPath(userIN)
 
     elif '|' in userIN:
@@ -61,7 +61,10 @@ def userChoice(userIN):
     elif '<' in userIN:
         if len(userIN) == 3:
             args = [userIN[0], userIN[2]]
-            ScreenExec(args)                               ########try
+            if ispath(userIN[2]):
+                doPath(args)
+            else:
+                ScreenExec(args)                               ########try
             #doPath(args)
         else:
             args = [userIN[0],userIN[3]]
@@ -74,7 +77,10 @@ def userChoice(userIN):
         fileExec(args, OutUser)
 
     else:
-        ScreenExec(userIN)                                     #########try
+        if ispath(userIN[0]):
+            doPath(userIN)
+        else:
+            ScreenExec(userIN)                                     #########try
         #doPath(args)
 
             # os.write(2, ("Child:    Error: Could not exec %s\n" % args[0]).encode())
