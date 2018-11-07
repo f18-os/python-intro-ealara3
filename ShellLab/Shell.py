@@ -59,7 +59,7 @@ def userChoice(userIN):
 
 
     elif '<' in userIN:
-        if len(userIN) == 3:
+        if len(userIN) == 3:                                #screen cat < text.txt
             args = [userIN[0], userIN[2]]
             if ispath(userIN[2]):
                 doPath(args)
@@ -72,6 +72,10 @@ def userChoice(userIN):
             fileExec(args,OutUser)
 
     elif '>' in userIN:
+        if len(userIN) == 3:                                #ex ls > output.txt
+            args = [userIN[0]]
+            OutUser = userIN[2]
+            fileExec(args, OutUser)
         args = [userIN[0], userIN[1]]
         OutUser = userIN[3]
         fileExec(args, OutUser)
@@ -167,7 +171,7 @@ def PipeRight(Right):
             pass  # ...fail quietly
 
 
-def ScreenExec(args):
+def ScreenExec(args):                                                                      #print in screen (if there is reading the args will have the command and the file(the reading file)
     for dir in re.split(":", os.environ['PATH']):  # try each directory in path
         program = "%s/%s" % (dir, args[0])
         try:
@@ -175,8 +179,8 @@ def ScreenExec(args):
         except FileNotFoundError:  # ...expected
             pass  # ...fail quietly
 
-def fileExec(args, OutUser):
-    os.close(1)  # redirect child's stdout
+def fileExec(args, OutUser):                                                                #get the command (ex ls, cat) and the file that is using (if there is any (ex cat text.txt)) and where will be output it which is variable OutUser
+    os.close(1)  # redirect child's stdout                                                  #the command and the file that is reading are within args.
     #sys.stdout = open("p4-output.txt", "w")
     sys.stdout = open(OutUser, "w")
     fd = sys.stdout.fileno()  # os.open("p4-output.txt", os.O_CREAT)
@@ -189,11 +193,18 @@ def fileExec(args, OutUser):
         except FileNotFoundError:  # ...expected
             pass  # ...fail quietly
 ########################################################################################### main
+try:
+   sys.ps1 = os.environ.get('PS1')
+except AttributeError:
+    sys.ps1 = '$ '
+
+if sys.ps1 is None:
+    sys.ps1 = '$'
 
 while 1 :
    r, w = os.pipe()
    try:
-       userIN = input("").split()
+       userIN = input(sys.ps1).split()
    except EOFError:
        sys.exit(1)
    #userIN = input("").split()
